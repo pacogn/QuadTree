@@ -30,14 +30,13 @@ export class QtCircle {
         const h = range.height;
 
         if (dx > R + w || dy > R + h) return false;
-        if (dx <= w || dy < h) return true;
+        if (dx <= w || dy <= h) return true;
 
-        const edges = Math.pow(dx - w, 2) + Math.pow(dy, 2);
-
+        const edges = Math.pow(dx - w, 2) + Math.pow(dy - h, 2);
         return edges <= this.rSquared;
     }
 
     draw(p5: P5) {
-        p5.circle(this.x, this.y, this.r);
+        p5.circle(this.x, this.y, this.r*2);
     }
 }
