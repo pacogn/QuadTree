@@ -8,15 +8,26 @@ let qtree: QuadTree;
 
 const rangeStart: QtPoint = new QtPoint(255, 255);
 
+// prettier-ignore
 const options = {
-    drawBorders: false,
-    drawPoints: true,
-    pointSize: 4,
-    capacity: 2,
-    stop: false,
-    moveMode: true,
-    queryMode: false,
-    filterType: 1,
+    drawBorders : false,
+    drawPoints  : true,
+    pointSize   : 4,
+    capacity    : 2,
+    stop        : false,
+    moveMode    : true,
+    queryMode   : false,
+    filterType  : 1,
+};
+
+// prettier-ignore
+const palette = {
+    borderLines    : '#C1C1C1',
+    movingRegion   : '#DFAA83',
+    selectedDots   : '#BB909D',
+    lockedRegion   : '#62B1A2'
+    dot            : '#95CBCA',
+
 };
 
 const sketch = (p5: P5) => {
@@ -40,18 +51,19 @@ const sketch = (p5: P5) => {
         p5.background(51);
 
         qtree.traverse(node => {
-            p5.stroke(255);
-            p5.noFill();
             p5.rectMode(p5.CENTER);
+            p5.noFill();
 
+            // drawing borders of the sections
             if (options.drawBorders) {
+                p5.stroke(palette.borderLines);
                 p5.strokeWeight(1);
-                // node.isLeaf() && node.boundary.draw(p5);
-                node.boundary.draw(p5);
+                node.isLeaf() && node.boundary.draw(p5);
             }
 
             if (options.drawPoints) {
                 node.points.forEach(point => {
+                    p5.stroke(palette.dot);
                     p5.strokeWeight(1);
                     p5.point(point.x, point.y);
                 });
@@ -59,15 +71,19 @@ const sketch = (p5: P5) => {
         });
 
         if (options.queryMode) {
+            // moving region
             if (options.moveMode) {
-                p5.stroke(0, 0, 255);
-                p5.strokeWeight(1);
+                p5.stroke(palette.movingRegion);
                 rangeStart.x = p5.mouseX;
                 rangeStart.y = p5.mouseY;
-            } else {
-                p5.stroke(0, 255, 0);
-                p5.strokeWeight(1);
             }
+            // locked
+            else {
+                p5.stroke(palette.lockedRegion);
+                p5.stroke(0, 255, 0);
+            }
+
+            p5.strokeWeight(1);
 
             const createFilter = (primitiveType: number = 0, x: Number, y: Number) => {
                 switch (primitiveType) {
@@ -89,7 +105,7 @@ const sketch = (p5: P5) => {
             let points = qtree.query(range);
 
             points.forEach(p => {
-                p5.stroke(0, 0, 255);
+                p5.stroke(palette.selectedDots);
                 p5.strokeWeight(4);
                 p5.point(p.x, p.y);
             });
