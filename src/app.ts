@@ -1,4 +1,5 @@
 import P5 from 'p5';
+import { Key } from 'ts-keycode-enum';
 import 'p5/lib/addons/p5.dom';
 import './styles.scss';
 
@@ -22,12 +23,11 @@ const options = {
 
 // prettier-ignore
 const palette = {
-    borderLines    : '#C1C1C1',
-    movingRegion   : '#DFAA83',
-    selectedDots   : '#BB909D',
-    lockedRegion   : '#62B1A2'
-    dot            : '#95CBCA',
-
+    borderLines    : '#444444',
+    movingRegion   : '#2D74DE',
+    selectedDots   : '#2D74DE',
+    lockedRegion   : '#95D84A',
+    dot            : '#F5F5F5',
 };
 
 const sketch = (p5: P5) => {
@@ -113,37 +113,66 @@ const sketch = (p5: P5) => {
     };
 
     p5.keyPressed = () => {
-        // r: reset
-        if (p5.keyCode == 82) {
-            let boundary = new QtRectangle(
-                p5.width / 2,
-                p5.height / 2,
-                p5.width / 2,
-                p5.height / 2
-            );
-            qtree = new QuadTree(boundary, 5);
-        }
+        const keyboardActions = [
+            {
+                key: Key.One,
+                desc: 'Toggle Drawing Borders',
+                execute: _ => options.drawBorders = !options.drawBorders,
+            },
+            {
+                key: Key.Two,
+                desc: 'Toggle Drawing points',
+                execute: _ => options.drawPoints = !options.drawPoints,
+            },
+            {
+                key: Key.R,
+                desc: 'Reset Board',
+                execute: _ => {
+                    const boundary = new QtRectangle(
+                        p5.width / 2,
+                        p5.height / 2,
+                        p5.width / 2,
+                        p5.height / 2
+                    );
+                    qtree = new QuadTree(boundary, 5);
+                },
+            },
+            {
+                key: Key.S,
+                desc: 'Halt',
+                execute: _ => options.stop = !options.stop,
+                hidden: true,
+            },
+            {
+                key: Key.Q,
+                desc: 'Show Filter',
+                execute: _ => options.queryMode = !options.queryMode,
+            },
+            {
+                key: Key.L,
+                desc: 'Lock Range',
+                execute: _ => options.moveMode = !options.moveMode,
+            },
+            {
+                key: Key.T,
+                desc: 'Toggle Filter Area',
+                execute: _ => options.filterType = (options.filterType + 1) % 2,
+            },
+            {
+                key: Key.F,
+                desc: 'Console log Framerate',
+                execute: _ => console.log(p5.frameRate()),
+            },
+            {
+                key: Key.H,
+                desc: 'Show Help',
+                hidden: true,
+                execute: _ => keyboardActions.forEach(action => !action.hidden && console.log(`Key ${String.fromCharCode(action.key)}: ${action.desc}`));
+            },
+        ];
 
-        // 1: toggle drawing Borders
-        if (p5.keyCode == 49) options.drawBorders = !options.drawBorders;
+        keyboardActions.forEach(action => p5.keyCode == action.key && action.execute())
 
-        // 2: toggle drawing Points;
-        if (p5.keyCode == 50) options.drawPoints = !options.drawPoints;
-
-        // s: toggle stop
-        if (p5.keyCode == 83) options.stop = !options.stop;
-
-        // q: query range
-        if (p5.keyCode == 81) options.queryMode = !options.queryMode;
-
-        // m: move range
-        if (p5.keyCode == 77) options.moveMode = !options.moveMode;
-
-        // t: toggle filter type square/circle
-        if (p5.keyCode == 84) options.filterType = (options.filterType + 1) % 2;
-
-        // f: splash frame rat
-        if (p5.keyCode == 70) console.log(p5.frameRate());
     };
 };
 
